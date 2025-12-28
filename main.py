@@ -1,4 +1,5 @@
 import os
+import random  # <-- Ye naya import hai random title ke liye
 import google.auth.transport.requests
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
@@ -12,15 +13,13 @@ SOURCE_FOLDER = os.environ["DRIVE_FOLDER_ID"]
 DEST_FOLDER = os.environ["DONE_FOLDER_ID"]
 
 def get_services():
-    # Token Refresh Logic
     creds = Credentials(
-        None, # Access token nahi hai, hum refresh karenge
+        None,
         refresh_token=REFRESH_TOKEN,
         token_uri="https://oauth2.googleapis.com/token",
         client_id=CLIENT_ID,
         client_secret=CLIENT_SECRET
     )
-    # Token expire ho gaya to refresh karein
     if not creds.valid:
         request = google.auth.transport.requests.Request()
         creds.refresh(request)
@@ -43,8 +42,8 @@ def main():
             print("No videos found to upload.")
             return
 
-        video = files[0] # Pehli video uthao
-        print(f"Found video: {video['name']}")
+        video = files[0]
+        print(f"Found video file: {video['name']}")
 
         # 3. Video Download Karna
         print("Downloading video...")
@@ -52,19 +51,71 @@ def main():
         with open("video.mp4", "wb") as f:
             f.write(request.execute())
 
-        # 4. YouTube par Upload Karna
-        print("Uploading to YouTube Shorts...")
-        title = video['name'].replace(".mp4", "").replace("_", " ") # Clean filename
+        # 4. RANDOM VIRAL TITLE GENERATOR (Funny Animals Edition)
+        print("Generating Viral Title...")
+
+        # Ye list hai viral titles ki, bot inme se koi ek chunega
+        viral_titles_list = [
+            "You Won't Believe What This Dog Did! 😂",
+            "Funniest Animal Fails of The Week 🐶",
+            "Try Not To Laugh Challenge: Animals 🤣",
+            "Cute Cat Moments That Will Melt Your Heart 😻",
+            "This Dog is Smarter Than Me! 😲",
+            "Wait For The End... 😂🐶",
+            "Instant Serotonin Boost: Cute Animals 💖",
+            "Why Cats Are The Boss 😼",
+            "Hilarious Dog Reaction! 🐕",
+            "Best Animal Fails 2025 🤣",
+            "This is Why I Love Dogs ❤️",
+            "Baby Animals Being Cute & Funny 🍼",
+            "Cat vs Dog: Who Won? 🥊",
+            "The Ending is So Funny! 😂",
+            "Funny Pets Doing Stupid Things 🤪",
+            "Golden Retriever Being Goofy 🐕",
+            "Laugh Out Loud Animal Moments 😆",
+            "Animals That Think They Are Humans 🧍‍♂️",
+            "Crazy Cat Moments 🐈",
+            "Most Viral Animal Video Right Now 📈"
+        ]
+
+        # Random title select karna
+        selected_title = random.choice(viral_titles_list)
         
+        # Title ke aage main hashtags
+        final_title = f"{selected_title} #Shorts #Funny"
+
+        print(f"Selected Title: {final_title}")
+
+        # --- VIRAL DESCRIPTION & KEYWORDS ---
+        description_text = f"""
+{selected_title}
+
+Watch the funniest and cutest animal moments! 🐶🐱
+Subscribe for your daily dose of laughter.
+
+👇 SUBSCRIBE for More!
+https://www.youtube.com/@YOUR_CHANNEL_HANDLE?sub_confirmation=1
+
+---
+#shorts #funny #animals #dogs #cats #pets #fails #humor #cute #viral #trending #comedy #wholesome #laugh #trynottolaugh
+"""
+
+        # --- TRENDING TAGS FOR SEO ---
+        viral_tags = [
+            'shorts', 'funny', 'animals', 'pets', 'dogs', 'cats', 'cute', 
+            'viral', 'trending', 'funny animals', 'cat videos', 'dog videos', 
+            'fails', 'try not to laugh', 'comedy', 'humor', 'wholesome', 'pet fails'
+        ]
+
         body = {
             'snippet': {
-                'title': f"{title} #Shorts #FunnyAnimals",
-                'description': "Subscribe for more funny animal videos! #Shorts #Animals",
-                'tags': ['shorts', 'funny', 'animals', 'cute'],
-                'categoryId': '15' # Pets & Animals category
+                'title': final_title,  
+                'description': description_text,
+                'tags': viral_tags,
+                'categoryId': '15' # Category 15 = Pets & Animals
             },
             'status': {
-                'privacyStatus': 'public', # 'private' rakhein agar test karna ho
+                'privacyStatus': 'public', 
                 'selfDeclaredMadeForKids': False
             }
         }
@@ -78,7 +129,7 @@ def main():
 
         print(f"Uploaded Successfully! Video ID: {upload['id']}")
 
-        # 5. Video Move Karna (Queue -> Done)
+        # 5. Video Move Karna
         print("Moving video to Done folder...")
         file = drive.files().get(fileId=video['id'], fields='parents').execute()
         previous_parents = ",".join(file.get('parents'))
@@ -92,7 +143,6 @@ def main():
 
     except Exception as e:
         print(f"Error aa gaya: {e}")
-        # Error aaye to fail kar do taaki GitHub email bheje
         exit(1)
 
 if __name__ == "__main__":
