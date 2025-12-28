@@ -94,7 +94,7 @@ Watch the funniest and cutest animal moments! 🐶🐱
 Subscribe for your daily dose of laughter.
 
 👇 SUBSCRIBE for More!
-https://www.youtube.com/@YOUR_CHANNEL_HANDLE?sub_confirmation=1
+https://www.youtube.com/channel/UCUVawWRFsWOcRzcVLN8MBAg
 
 ---
 #shorts #funny #animals #dogs #cats #pets #fails #humor #cute #viral #trending #comedy #wholesome #laugh #trynottolaugh
